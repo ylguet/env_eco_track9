@@ -1,0 +1,8 @@
+,M1 coef,M1 se,M2 coef,M2 se
+C(peril)[T.Earthquake],49.44,12.7,34.05,11.94
+C(peril)[T.Flood*],40.5,14.39,23.7,12.7
+C(peril)[T.Wildfire],62.25,15.25,37.63,13.08
+C(peril)[T.Windstorm],33.32,14.26,15.0,13.15
+Intercept,41.83,14.76,66.18,12.33
+log10_loss_intensity,4.97,3.91,4.81,3.22
+public_scheme,,,-37.08,11.38

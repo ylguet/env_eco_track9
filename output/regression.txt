@@ -1,0 +1,98 @@
+Cross-section of country x peril cells with recorded economic losses (CATDAT, 1980-2024)
+Dependent variable: protection gap in percentage points (0-100)
+Standard errors clustered by country
+
+Observations: 98  Countries: 30
+
+MODEL 1: gap = a_peril + b*log10(annual losses/GDP, per mille)
+                            OLS Regression Results                            
+==============================================================================
+Dep. Variable:                 gap_pp   R-squared:                       0.218
+Model:                            OLS   Adj. R-squared:                  0.176
+Method:                 Least Squares   F-statistic:                     6.364
+Date:                Wed, 14 Oct 2026   Prob (F-statistic):           0.000421
+Time:                        20:34:44   Log-Likelihood:                -464.48
+No. Observations:                  98   AIC:                             941.0
+Df Residuals:                      92   BIC:                             956.5
+Df Model:                           5                                         
+Covariance Type:              cluster                                         
+==========================================================================================
+                             coef    std err          z      P>|z|      [0.025      0.975]
+------------------------------------------------------------------------------------------
+Intercept                 41.8283     14.763      2.833      0.005      12.894      70.763
+C(peril)[T.Earthquake]    49.4364     12.699      3.893      0.000      24.547      74.326
+C(peril)[T.Flood*]        40.4995     14.389      2.815      0.005      12.297      68.701
+C(peril)[T.Wildfire]      62.2515     15.253      4.081      0.000      32.357      92.146
+C(peril)[T.Windstorm]     33.3233     14.258      2.337      0.019       5.378      61.268
+log10_loss_intensity       4.9709      3.910      1.271      0.204      -2.693      12.634
+==============================================================================
+Omnibus:                       19.714   Durbin-Watson:                   2.120
+Prob(Omnibus):                  0.000   Jarque-Bera (JB):               24.275
+Skew:                          -1.072   Prob(JB):                     5.36e-06
+Kurtosis:                       4.161   Cond. No.                         18.5
+==============================================================================
+
+Notes:
+[1] Standard Errors are robust to cluster correlation (CRV1)
+
+MODEL 2: gap = a_peril + b*log10(annual losses/GDP) + c*public_or_PPP_insurance_or_reinsurance
+Cells with public involvement: 20 of 98
+                            OLS Regression Results                            
+==============================================================================
+Dep. Variable:                 gap_pp   R-squared:                       0.419
+Model:                            OLS   Adj. R-squared:                  0.380
+Method:                 Least Squares   F-statistic:                     22.90
+Date:                Wed, 14 Oct 2026   Prob (F-statistic):           8.91e-10
+Time:                        20:34:44   Log-Likelihood:                -449.95
+No. Observations:                  98   AIC:                             913.9
+Df Residuals:                      91   BIC:                             932.0
+Df Model:                           6                                         
+Covariance Type:              cluster                                         
+==========================================================================================
+                             coef    std err          z      P>|z|      [0.025      0.975]
+------------------------------------------------------------------------------------------
+Intercept                 66.1785     12.329      5.368      0.000      42.015      90.342
+C(peril)[T.Earthquake]    34.0482     11.941      2.851      0.004      10.644      57.452
+C(peril)[T.Flood*]        23.6986     12.695      1.867      0.062      -1.184      48.581
+C(peril)[T.Wildfire]      37.6273     13.083      2.876      0.004      11.985      63.269
+C(peril)[T.Windstorm]     14.9954     13.150      1.140      0.254     -10.779      40.770
+log10_loss_intensity       4.8108      3.219      1.495      0.135      -1.498      11.120
+public_scheme            -37.0832     11.379     -3.259      0.001     -59.386     -14.781
+==============================================================================
+Omnibus:                       20.041   Durbin-Watson:                   2.062
+Prob(Omnibus):                  0.000   Jarque-Bera (JB):               26.949
+Skew:                          -0.990   Prob(JB):                     1.41e-06
+Kurtosis:                       4.636   Cond. No.                         19.6
+==============================================================================
+
+Notes:
+[1] Standard Errors are robust to cluster correlation (CRV1)
+
+ROBUSTNESS OF THE REGIME COEFFICIENT (clustered SE by country)
+                                   specification  coef_pp     se  p_value  cells  countries
+                  Baseline: 2025 version, CATDAT  -37.083 11.379    0.001     98         30
+      2024 version (before the 2025 corrections)  -31.222  8.601    0.000     97         30
+                                    2022 version  -34.481 10.548    0.001     96         30
+                 EM-DAT losses instead of CATDAT  -17.925  8.396    0.033     61         26
+                                  Without France  -29.764 10.496    0.005     93         29
+                        Without France and Spain  -33.326 12.958    0.010     88         28
+      Only cells with losses of EUR 100m or more  -32.065 11.845    0.007     72         27
+               Cells weighted by economic losses  -32.622 16.187    0.044     98         30
+Risk measured by EIOPA modelled risk score (0-4)  -36.764 11.579    0.001     98         30
+                 Regime = cover mandatory by law  -34.848 12.084    0.004     98         30
+Regime = cover mandatory by law, without Romania  -44.751  7.821    0.000     95         29
+          Regime = flat (not risk-based) premium  -20.194 10.048    0.044     98         30
+       Fractional logit, average marginal effect  -34.957 11.122    0.002     98         30
+All three regime dummies together: public_scheme  -32.665 10.417    0.002     98         30
+    All three regime dummies together: mandatory  -25.254  7.656    0.001     98         30
+ All three regime dummies together: flat_premium    2.901  6.399    0.650     98         30
+
+Permutation test: 2000 random re-assignments of countries' regime patterns; two-sided p = 0.0005 (observed coefficient -37.08)
+
+Fractional logit AME of public involvement: -34.96 pp (cluster-bootstrap SE 11.12, 499 draws)
+Regime features correlation:
+               public_scheme  mandatory  flat_premium
+public_scheme           1.00       0.30          0.52
+mandatory               0.30       1.00          0.49
+flat_premium            0.52       0.49          1.00
+Raw file SHA-256: 2c218f0d13dd204209aebecb75179a4dd84a2f5766af5c76894e9bf8b7648efe

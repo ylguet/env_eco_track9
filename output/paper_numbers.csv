@@ -1,0 +1,44 @@
+quantity,value,output_file
+"Economic losses 1980-2024, EUR bn",801.9485,table1_summary_by_peril.csv
+"Insured losses 1980-2024, EUR bn",221.8424,table1_summary_by_peril.csv
+"Protection gap, all perils, %",72.3371,table1_summary_by_peril.csv
+"Uninsured losses, EUR bn",580.1061,table1_summary_by_peril.csv
+"Gap Flood*, CATDAT, %",78.8332,table1_summary_by_peril.csv
+"Gap Flood*, EM-DAT, %",83.8646,table1_summary_by_peril.csv
+"Share of all uninsured losses, Flood*, %",53.1394,table1_summary_by_peril.csv
+"Gap Windstorm, CATDAT, %",48.3459,table1_summary_by_peril.csv
+"Gap Windstorm, EM-DAT, %",58.8567,table1_summary_by_peril.csv
+"Share of all uninsured losses, Windstorm, %",21.0408,table1_summary_by_peril.csv
+"Gap Earthquake, CATDAT, %",96.2934,table1_summary_by_peril.csv
+"Gap Earthquake, EM-DAT, %",97.2961,table1_summary_by_peril.csv
+"Share of all uninsured losses, Earthquake, %",21.5913,table1_summary_by_peril.csv
+"Gap Wildfire, CATDAT, %",90.0345,table1_summary_by_peril.csv
+"Gap Wildfire, EM-DAT, %",98.6884,table1_summary_by_peril.csv
+"Share of all uninsured losses, Wildfire, %",4.1385,table1_summary_by_peril.csv
+"Gap Coastal Flood, CATDAT, %",30.6138,table1_summary_by_peril.csv
+"Gap Coastal Flood, EM-DAT, %",,table1_summary_by_peril.csv
+"Share of all uninsured losses, Coastal Flood, %",0.09,table1_summary_by_peril.csv
+"Gap, climate-related perils (excl. earthquake), %",67.6992,table1_summary_by_peril.csv
+"Median cell gap, %",91.5202,table1_summary_by_peril.csv
+"Share of uninsured losses held by Italy+Germany+Spain, %",66.895,table2_by_country.csv
+"Share of uninsured losses in the 5 largest cells, %",58.82,clean_data_2025.csv
+"Uninsured losses per year, Slovenia, per mille of GDP",5.1877,table2_by_country.csv
+"Uninsured losses per year, Greece, per mille of GDP",2.5949,table2_by_country.csv
+"Uninsured losses per year, Italy, per mille of GDP",2.1848,table2_by_country.csv
+"Uninsured losses per year, Germany, per mille of GDP",0.5675,table2_by_country.csv
+"Uninsured losses per year, France, per mille of GDP",0.2189,table2_by_country.csv
+"Re-pricing between 2022 and 2025 versions, EUR bn",99.1928,table8_repricing_between_versions.csv
+"New or revised economic losses 2022->2025 versions, EUR bn",86.2487,table8_repricing_between_versions.csv
+"Windstorm gap drop, 2024->2025 version, points",16.5244,table4_vintages.csv
+"France all-peril gap, 2024 version, %",69.1309,clean_data_all_versions.csv
+"France all-peril gap, 2025 version, %",22.165,clean_data_all_versions.csv
+"Spearman correlation, EIOPA penetration score vs gap",0.567,table5_gap_by_scheme_feature.csv
+"Model 2: public involvement coefficient, pp",-37.0832,regression.txt
+Model 2: public involvement SE,11.3789,regression.txt
+"Model 2: loss intensity coefficient, pp per tenfold",4.8108,regression.txt
+Model 2: loss intensity SE,3.219,regression.txt
+Model 1 R2,0.218,regression.txt
+Model 2 R2,0.4187,regression.txt
+Permutation test p-value,0.0005,regression.txt
+"Fractional logit AME of public involvement, pp",-34.9565,regression_robustness.csv
+Share of cells with a 100% gap,29.5918,regression_robustness.csv

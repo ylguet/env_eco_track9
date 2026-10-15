@@ -1,0 +1,8 @@
+peril,Countries with losses,Economic losses (EUR bn),Insured losses (EUR bn),"Gap, loss-weighted (%)","Gap, EM-DAT (%)",Country gap: mean (%),Country gap: s.d. (pp),Country gap: min (%),Country gap: median (%),Country gap: max (%)
+Flood*,29.0,391.0,82.8,78.8,83.9,78.5,28.3,0.0,93.0,100.0
+Windstorm,30.0,252.5,130.4,48.3,58.9,70.2,29.6,0.0,81.5,100.0
+Earthquake,20.0,130.1,4.8,96.3,97.3,81.7,32.3,0.0,99.1,100.0
+Wildfire,13.0,26.7,2.7,90.0,98.7,95.6,9.6,68.0,100.0,100.0
+Coastal Flood,6.0,1.7,1.2,30.6,,30.3,40.0,0.0,15.8,100.0
+All perils,30.0,801.9,221.8,72.3,80.6,75.9,31.5,0.0,91.5,100.0
+Climate-related perils (excl. earthquake),30.0,671.9,217.0,67.7,75.3,74.5,31.3,0.0,86.2,100.0

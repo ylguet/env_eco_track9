@@ -1,0 +1,14 @@
+,feature,cells,countries,gap_loss_weighted_pct,gap_median_cell_pct
+1: 75-100% insured,EIOPA modelled penetration score,33,15,49.1,55.8
+2: 50-75%,EIOPA modelled penetration score,27,14,78.2,84.2
+3: 25-50%,EIOPA modelled penetration score,18,13,92.7,99.9
+4: 0-25%,EIOPA modelled penetration score,20,11,97.3,98.0
+No,Cover mandatory by law,87,28,81.8,92.4
+Yes,Cover mandatory by law,11,4,27.8,40.4
+Flat,Premium type,28,11,45.8,70.2
+Risk-based,Premium type,61,23,82.6,93.2
+not reported,Premium type,9,5,98.0,100.0
+Ad-hoc compensation,Post-disaster state relief,52,17,89.1,94.0
+Mechanism in place,Post-disaster state relief,23,8,46.9,78.2
+No,Post-disaster state relief,18,8,65.1,88.2
+not reported,Post-disaster state relief,5,2,74.3,87.0

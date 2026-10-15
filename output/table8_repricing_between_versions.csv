@@ -1,0 +1,4 @@
+from,to,repricing_factor,share_cells_exactly_repriced,econ_change_bn,econ_repricing_bn,econ_new_or_revised_bn,ins_change_bn,ins_repricing_bn,ins_new_or_revised_bn
+2022,2023,1.08,0.6458,61.6202,49.3206,12.2996,9.6001,9.9961,-0.396
+2023,2024,1.0412,0.4433,65.3788,27.9388,37.4399,11.4279,5.5435,5.8843
+2024,2025,1.0295,0.4742,58.4425,21.9334,36.5091,75.8629,4.3064,71.5565

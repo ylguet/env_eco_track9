@@ -1,0 +1,17 @@
+specification,coef_pp,se,p_value,cells,countries
+"Baseline: 2025 version, CATDAT",-37.083,11.379,0.001,98,30
+2024 version (before the 2025 corrections),-31.222,8.601,0.0,97,30
+2022 version,-34.481,10.548,0.001,96,30
+EM-DAT losses instead of CATDAT,-17.925,8.396,0.033,61,26
+Without France,-29.764,10.496,0.005,93,29
+Without France and Spain,-33.326,12.958,0.01,88,28
+Only cells with losses of EUR 100m or more,-32.065,11.845,0.007,72,27
+Cells weighted by economic losses,-32.622,16.187,0.044,98,30
+Risk measured by EIOPA modelled risk score (0-4),-36.764,11.579,0.001,98,30
+Regime = cover mandatory by law,-34.848,12.084,0.004,98,30
+"Regime = cover mandatory by law, without Romania",-44.751,7.821,0.0,95,29
+Regime = flat (not risk-based) premium,-20.194,10.048,0.044,98,30
+"Fractional logit, average marginal effect",-34.957,11.122,0.002,98,30
+All three regime dummies together: public_scheme,-32.665,10.417,0.002,98,30
+All three regime dummies together: mandatory,-25.254,7.656,0.001,98,30
+All three regime dummies together: flat_premium,2.901,6.399,0.65,98,30

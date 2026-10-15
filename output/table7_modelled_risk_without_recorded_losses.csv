@@ -1,0 +1,7 @@
+country,peril,risk_est,ins_penetration
+Belgium,Coastal Flood,2.0,1.0
+Germany,Coastal Flood,2.0,4.0
+Ireland,Coastal Flood,2.0,2.0
+Netherlands,Coastal Flood,2.6,4.0
+Austria,Wildfire,2.0,4.0
+Slovakia,Wildfire,2.0,2.0

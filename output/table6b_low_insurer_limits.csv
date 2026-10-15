@@ -1,0 +1,7 @@
+country,Peril,deductible_pct,insurer_amount_pct,policyholder_excess_pct
+Austria,Earthquake,0,2,98
+Austria,Flood*,0,3,97
+Croatia,Flood*,0,29,71
+Italy,Flood*,3,36,60
+Luxembourg,Earthquake,0,44,56
+Slovenia,Flood*,0,53,47
