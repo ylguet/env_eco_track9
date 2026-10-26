@@ -42,3 +42,150 @@ Model 2 R2,0.4187,regression.txt
 Permutation test p-value,0.0005,regression.txt
 "Fractional logit AME of public involvement, pp",-34.9565,regression_robustness.csv
 Share of cells with a 100% gap,29.5918,regression_robustness.csv
+"Model 3: public involvement coefficient, pp",-36.7637,regression.txt
+Model 3: public involvement SE,11.5787,regression.txt
+"Model 3: modelled risk coefficient, pp per score step",1.4108,regression.txt
+Model 3: modelled risk SE,2.8523,regression.txt
+Model 3 R2,0.4041,regression.txt
+"Robustness: Baseline: 2025 version, CATDAT, coefficient pp",-37.0832,regression_robustness.csv
+"Robustness: Baseline: 2025 version, CATDAT, SE",11.3789,regression_robustness.csv
+"Robustness: Baseline: 2025 version, CATDAT, p-value",0.0011,regression_robustness.csv
+"Robustness: 2024 version (before the 2025 corrections), coefficient pp",-31.2216,regression_robustness.csv
+"Robustness: 2024 version (before the 2025 corrections), SE",8.6008,regression_robustness.csv
+"Robustness: 2024 version (before the 2025 corrections), p-value",0.0003,regression_robustness.csv
+"Robustness: 2024 version, without France, coefficient pp",-31.4298,regression_robustness.csv
+"Robustness: 2024 version, without France, SE",10.4576,regression_robustness.csv
+"Robustness: 2024 version, without France, p-value",0.0027,regression_robustness.csv
+"Robustness: 2022 version, coefficient pp",-34.481,regression_robustness.csv
+"Robustness: 2022 version, SE",10.5484,regression_robustness.csv
+"Robustness: 2022 version, p-value",0.0011,regression_robustness.csv
+"Robustness: EM-DAT losses instead of CATDAT, coefficient pp",-17.9252,regression_robustness.csv
+"Robustness: EM-DAT losses instead of CATDAT, SE",8.3956,regression_robustness.csv
+"Robustness: EM-DAT losses instead of CATDAT, p-value",0.0328,regression_robustness.csv
+"Robustness: Without France, coefficient pp",-29.7644,regression_robustness.csv
+"Robustness: Without France, SE",10.4963,regression_robustness.csv
+"Robustness: Without France, p-value",0.0046,regression_robustness.csv
+"Robustness: Without France and Spain, coefficient pp",-33.3261,regression_robustness.csv
+"Robustness: Without France and Spain, SE",12.9579,regression_robustness.csv
+"Robustness: Without France and Spain, p-value",0.0101,regression_robustness.csv
+"Robustness: Without France, Denmark and Iceland, coefficient pp",-21.8103,regression_robustness.csv
+"Robustness: Without France, Denmark and Iceland, SE",10.2412,regression_robustness.csv
+"Robustness: Without France, Denmark and Iceland, p-value",0.0332,regression_robustness.csv
+"Robustness: French windstorm coded as private, coefficient pp",-33.5715,regression_robustness.csv
+"Robustness: French windstorm coded as private, SE",10.4249,regression_robustness.csv
+"Robustness: French windstorm coded as private, p-value",0.0013,regression_robustness.csv
+"Robustness: River and pluvial flood cells only, coefficient pp",-37.7212,regression_robustness.csv
+"Robustness: River and pluvial flood cells only, SE",9.9214,regression_robustness.csv
+"Robustness: River and pluvial flood cells only, p-value",0.0001,regression_robustness.csv
+"Robustness: Flood cells only, without France, coefficient pp",-36.3624,regression_robustness.csv
+"Robustness: Flood cells only, without France, SE",11.5439,regression_robustness.csv
+"Robustness: Flood cells only, without France, p-value",0.0016,regression_robustness.csv
+"Robustness: Only cells with losses of EUR 100m or more, coefficient pp",-32.0647,regression_robustness.csv
+"Robustness: Only cells with losses of EUR 100m or more, SE",11.845,regression_robustness.csv
+"Robustness: Only cells with losses of EUR 100m or more, p-value",0.0068,regression_robustness.csv
+"Robustness: Cells weighted by economic losses, coefficient pp",-32.6222,regression_robustness.csv
+"Robustness: Cells weighted by economic losses, SE",16.1872,regression_robustness.csv
+"Robustness: Cells weighted by economic losses, p-value",0.0439,regression_robustness.csv
+"Robustness: Weighted by economic losses, without France, coefficient pp",-5.6361,regression_robustness.csv
+"Robustness: Weighted by economic losses, without France, SE",6.0253,regression_robustness.csv
+"Robustness: Weighted by economic losses, without France, p-value",0.3496,regression_robustness.csv
+"Robustness: Weighted, French windstorm coded as private, coefficient pp",-13.4467,regression_robustness.csv
+"Robustness: Weighted, French windstorm coded as private, SE",12.2192,regression_robustness.csv
+"Robustness: Weighted, French windstorm coded as private, p-value",0.2711,regression_robustness.csv
+"Robustness: Risk measured by EIOPA modelled risk score (0-4), coefficient pp",-36.7637,regression_robustness.csv
+"Robustness: Risk measured by EIOPA modelled risk score (0-4), SE",11.5787,regression_robustness.csv
+"Robustness: Risk measured by EIOPA modelled risk score (0-4), p-value",0.0015,regression_robustness.csv
+"Robustness: Regime = cover mandatory by law, coefficient pp",-34.8481,regression_robustness.csv
+"Robustness: Regime = cover mandatory by law, SE",12.0837,regression_robustness.csv
+"Robustness: Regime = cover mandatory by law, p-value",0.0039,regression_robustness.csv
+"Robustness: Regime = cover mandatory by law, without Romania, coefficient pp",-44.7513,regression_robustness.csv
+"Robustness: Regime = cover mandatory by law, without Romania, SE",7.8214,regression_robustness.csv
+"Robustness: Regime = cover mandatory by law, without Romania, p-value",0.0,regression_robustness.csv
+"Robustness: Regime = flat (not risk-based) premium, coefficient pp",-20.1944,regression_robustness.csv
+"Robustness: Regime = flat (not risk-based) premium, SE",10.0483,regression_robustness.csv
+"Robustness: Regime = flat (not risk-based) premium, p-value",0.0445,regression_robustness.csv
+"Robustness: Fractional logit, average marginal effect, coefficient pp",-34.9565,regression_robustness.csv
+"Robustness: Fractional logit, average marginal effect, SE",11.1223,regression_robustness.csv
+"Robustness: Fractional logit, average marginal effect, p-value",0.0017,regression_robustness.csv
+"Robustness: All three regime dummies together: public_scheme, coefficient pp",-32.6648,regression_robustness.csv
+"Robustness: All three regime dummies together: public_scheme, SE",10.4167,regression_robustness.csv
+"Robustness: All three regime dummies together: public_scheme, p-value",0.0017,regression_robustness.csv
+"Robustness: All three regime dummies together: mandatory, coefficient pp",-25.2539,regression_robustness.csv
+"Robustness: All three regime dummies together: mandatory, SE",7.6555,regression_robustness.csv
+"Robustness: All three regime dummies together: mandatory, p-value",0.001,regression_robustness.csv
+"Robustness: All three regime dummies together: flat_premium, coefficient pp",2.901,regression_robustness.csv
+"Robustness: All three regime dummies together: flat_premium, SE",6.3986,regression_robustness.csv
+"Robustness: All three regime dummies together: flat_premium, p-value",0.6503,regression_robustness.csv
+"Flood gap, France, %",46.0309,clean_data_2025.csv
+"Flood gap, Denmark, %",36.1789,clean_data_2025.csv
+"Flood gap, Iceland, %",3.8934,clean_data_2025.csv
+"Flood gap, Norway, %",49.691,clean_data_2025.csv
+"Flood gap, Spain, %",74.6598,clean_data_2025.csv
+"Flood gap, Belgium, %",78.1572,clean_data_2025.csv
+"Flood gap, Germany, %",73.8138,clean_data_2025.csv
+"Flood gap, Italy, %",97.1317,clean_data_2025.csv
+"France windstorm gap, %",0.6338,clean_data_2025.csv
+"France insured losses, all perils, change 2024->2025, EUR bn",62.7755,table10_france_revision_2024_2025.csv
+"France economic losses, all perils, change 2024->2025, EUR bn",5.9518,table10_france_revision_2024_2025.csv
+"Gap, relief = Ad-hoc compensation, public = 0, %",92.5932,table9_relief_by_public_involvement.csv
+"Gap, relief = Ad-hoc compensation, public = 1, %",74.7957,table9_relief_by_public_involvement.csv
+"Gap, relief = Mechanism in place, public = 0, %",92.6041,table9_relief_by_public_involvement.csv
+"Gap, relief = Mechanism in place, public = 1, %",28.6838,table9_relief_by_public_involvement.csv
+"Gap, relief = No, public = 0, %",65.0953,table9_relief_by_public_involvement.csv
+"Gap, relief = not reported, public = 0, %",88.5278,table9_relief_by_public_involvement.csv
+"Gap, relief = not reported, public = 1, %",37.0709,table9_relief_by_public_involvement.csv
+"Slovenia uninsured losses per year, 2023 version, per mille of GDP",2.1877,clean_data_all_versions.csv
+"Slovenia uninsured losses per year, 2025 version, per mille of GDP",5.1877,clean_data_all_versions.csv
+"Slovenia: share of 1980-2024 losses in 2023 (EEA), %",55.216,table11_eea_annual_gap.csv
+"Slovenia implied GDP behind EIOPA loss intensity, EUR bn",66.9666,clean_data_2025.csv
+EM-DAT cells with losses,61.0,clean_data_2025.csv
+EM-DAT cells with zero insured losses,21.0,clean_data_2025.csv
+"EM-DAT share of economic losses in zero-insured cells, %",6.3342,clean_data_2025.csv
+"EM-DAT gap excluding zero-insured cells, %",79.2908,clean_data_2025.csv
+"Croatia uninsured losses per year with EM-DAT earthquake, per mille of GDP",4.2568,clean_data_2025.csv
+"EEA data: economic losses 1980-2024, 30 countries, EUR bn",956.8734,table11_eea_annual_gap.csv
+"EEA data: insured losses 1980-2024, 30 countries, EUR bn",167.6975,table11_eea_annual_gap.csv
+"EEA data: gap 1980-2024, 30 countries, %",82.4744,table11_eea_annual_gap.csv
+"EEA data: France gap, %",65.0856,table11c_eea_gap_by_country.csv
+"EEA data: France insured losses, EUR bn",48.4726,table11c_eea_gap_by_country.csv
+"EEA data: 2024 single-year gap, %",73.2265,table11_eea_annual_gap.csv
+"EEA data: 2015-2024 gap, %",82.6595,table11_eea_annual_gap.csv
+"EEA data: min 10-year gap (windows ending 1990-2024), %",75.322,table11_eea_annual_gap.csv
+"EEA data: max 10-year gap (windows ending 1990-2024), %",84.1389,table11_eea_annual_gap.csv
+"EEA data: gap in the 1980s, %",94.0877,table11b_eea_gap_by_decade.csv
+"EEA data: gap in the 1990s, %",75.4453,table11b_eea_gap_by_decade.csv
+"EEA data: gap in the 2000s, %",84.1389,table11b_eea_gap_by_decade.csv
+"EEA data: gap in the 2010s, %",79.0623,table11b_eea_gap_by_decade.csv
+"EEA data: gap in the 2020s, %",81.8909,table11b_eea_gap_by_decade.csv
+"EEA-32 climatological gap in the 1980s, %",95.3274,table11d_eea32_gap_by_hazard_decade.csv
+"EEA-32 climatological gap in the 1990s, %",78.3344,table11d_eea32_gap_by_hazard_decade.csv
+"EEA-32 climatological gap in the 2000s, %",89.7588,table11d_eea32_gap_by_hazard_decade.csv
+"EEA-32 climatological gap in the 2010s, %",90.3528,table11d_eea32_gap_by_hazard_decade.csv
+"EEA-32 climatological gap in the 2020s, %",93.3178,table11d_eea32_gap_by_hazard_decade.csv
+"EEA-32 geotechnical gap in the 1980s, %",99.7866,table11d_eea32_gap_by_hazard_decade.csv
+"EEA-32 geotechnical gap in the 1990s, %",96.797,table11d_eea32_gap_by_hazard_decade.csv
+"EEA-32 geotechnical gap in the 2000s, %",96.5276,table11d_eea32_gap_by_hazard_decade.csv
+"EEA-32 geotechnical gap in the 2010s, %",91.2198,table11d_eea32_gap_by_hazard_decade.csv
+"EEA-32 geotechnical gap in the 2020s, %",91.9508,table11d_eea32_gap_by_hazard_decade.csv
+"EEA-32 hydrological gap in the 1980s, %",89.6671,table11d_eea32_gap_by_hazard_decade.csv
+"EEA-32 hydrological gap in the 1990s, %",89.8452,table11d_eea32_gap_by_hazard_decade.csv
+"EEA-32 hydrological gap in the 2000s, %",86.2157,table11d_eea32_gap_by_hazard_decade.csv
+"EEA-32 hydrological gap in the 2010s, %",80.8087,table11d_eea32_gap_by_hazard_decade.csv
+"EEA-32 hydrological gap in the 2020s, %",79.1095,table11d_eea32_gap_by_hazard_decade.csv
+"EEA-32 meteorological gap in the 1980s, %",81.0888,table11d_eea32_gap_by_hazard_decade.csv
+"EEA-32 meteorological gap in the 1990s, %",50.5846,table11d_eea32_gap_by_hazard_decade.csv
+"EEA-32 meteorological gap in the 2000s, %",63.8941,table11d_eea32_gap_by_hazard_decade.csv
+"EEA-32 meteorological gap in the 2010s, %",64.9603,table11d_eea32_gap_by_hazard_decade.csv
+"EEA-32 meteorological gap in the 2020s, %",73.0651,table11d_eea32_gap_by_hazard_decade.csv
+"Trend of annual gap, pp per decade",-2.1653,trend_eea.txt
+"Trend of annual gap, SE per decade",1.4796,trend_eea.txt
+"Trend of annual gap, p-value",0.1433,trend_eea.txt
+"Loss-weighted trend, pp per decade",-2.0345,trend_eea.txt
+"Loss-weighted trend, SE per decade",1.6889,trend_eea.txt
+"Share of 1980-2024 losses in the 10 costliest years, %",48.2484,trend_eea.txt
+"EEA data: uninsured losses 2002-2023 (EU Solidarity Fund period), EUR bn",458.8755,table11_eea_annual_gap.csv
+"EEA data: average annual economic losses in the 1980s, EUR bn",15.4176,table11b_eea_gap_by_decade.csv
+"EEA data: average annual economic losses in the 1990s, EUR bn",16.9193,table11b_eea_gap_by_decade.csv
+"EEA data: average annual economic losses in the 2000s, EUR bn",17.999,table11b_eea_gap_by_decade.csv
+"EEA data: average annual economic losses in the 2010s, EUR bn",22.4898,table11b_eea_gap_by_decade.csv
+"EEA data: average annual economic losses in the 2020s, EUR bn",45.7233,table11b_eea_gap_by_decade.csv

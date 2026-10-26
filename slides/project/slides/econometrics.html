@@ -1,0 +1,32 @@
+<section id="econometrics" data-transition="fade" style="background:#FAF8F3;color:#1F2937;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:32px">
+<div style="display:flex;flex-direction:column;gap:16px">
+<p style="font-size:24px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:#2B6CB0">9 · Econometrics</p>
+<h2 style="font-family:'Source Serif 4', Georgia, serif;font-size:72px;font-weight:700;line-height:1.1;color:#14213D">Public involvement: 37 points lower, on few countries</h2>
+</div>
+<div style="background:#14213D;border-radius:16px;padding:28px 40px;display:flex;flex-direction:column;gap:8px">
+<p style="font-family:'Source Serif 4', Georgia, serif;font-size:40px;color:#F4EFE6">Gap = α(peril) + β · exposure + γ · Public + ε</p>
+<p style="font-size:24px;color:#C9D3E3">OLS, 98 country–peril cells, unweighted, † cells kept; Public set per peril; SE clustered by country (30, of which 7 public)</p>
+</div>
+<div style="display:flex;gap:32px">
+<div style="flex:1;background:#FFFEFB;border:1px solid #E3E0D8;border-radius:16px;padding:32px;display:flex;flex-direction:column;gap:8px">
+<p style="font-size:24px;font-weight:600;color:#6B7280">β · exposure</p>
+<p style="font-family:'Source Serif 4', Georgia, serif;font-size:44px;font-weight:700;color:#14213D">+4.8 pp (3.2)</p>
+<p style="font-size:24px;line-height:1.4;color:#3D4757">per tenfold loss intensity; EIOPA’s modelled risk, free of division bias: +1.4 (2.9). Both not significant.</p>
+</div>
+<div style="flex:1;background:#FFFEFB;border:1px solid #E3E0D8;border-radius:16px;padding:32px;display:flex;flex-direction:column;gap:8px">
+<p style="font-size:24px;font-weight:600;color:#6B7280">γ · public involvement</p>
+<p style="font-family:'Source Serif 4', Georgia, serif;font-size:44px;font-weight:700;color:#C2571E">−37 pp (11.4)</p>
+<p style="font-size:24px;line-height:1.4;color:#3D4757">95% CI −59 to −15. Permutation test p = 0.0005; fractional logit −35.</p>
+</div>
+<div style="flex:1.25;background:#FFFEFB;border:1px solid #E3E0D8;border-radius:16px;padding:32px;display:flex;flex-direction:column;gap:6px">
+<p style="font-size:24px;font-weight:600;color:#6B7280">Key checks on γ</p>
+<p style="font-size:26px;line-height:1.4;color:#1F2937">Without France: <b>−30</b> (10.5)</p>
+<p style="font-size:26px;line-height:1.4;color:#1F2937">2024 data, pre-correction: <b>−31</b> (8.6)</p>
+<p style="font-size:26px;line-height:1.4;color:#1F2937">Flood cells only: <b>−38</b> (9.9)</p>
+<p style="font-size:26px;line-height:1.4;color:#9A3F12">Loss-weighted, no France: <b>−6</b> (6.0), n.s.</p>
+</div>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:1500px;font-size:24px;color:#6B7280">EIOPA (2025b), CATDAT, 1980–2024 · all 16 specifications: paper, Table 5; regression.txt</p>
+<p style="position:absolute;right:128px;bottom:64px;width:200px;font-size:24px;color:#6B7280;text-align:right">10 / 13</p>
+<aside>OLS with peril fixed effects, each cell counts once, and Public is coded per peril, so French windstorm and French flood can differ. Exposure: realised loss intensity appears on both sides of the regression, which creates division bias, so we also use EIOPA’s modelled risk score; neither predicts the gap. Public involvement: minus 37 points. With only 7 treated countries clustered errors can be too small, so we ran a permutation test: p equals 0.0005. The three checks that matter: without France minus 30; on the 2024 data, before the French correction, minus 31; flood alone minus 38. And the honest limit: weighted by losses and without France it drops to minus 6, not significant. Without France, Denmark and Iceland the unweighted estimate is minus 22, p 0.03. So in euros the result rests on France.</aside>
+</section>

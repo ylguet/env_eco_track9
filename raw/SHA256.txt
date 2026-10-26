@@ -1,1 +1,2 @@
 2c218f0d13dd204209aebecb75179a4dd84a2f5766af5c76894e9bf8b7648efe  EIOPA-BoS-24-474_PowerBI input dashboard on insurance protectiongap.xlsx
+b60e1fd6812eb83b27f7559d8d784e178d4b74fb0ad412bd01ffc768d9d58d95  eea_t_losses-from-climate-related-extremes_p_1980-2024_v01_r01.zip

@@ -1,0 +1,60 @@
+Annual protection gap, 30 EIOPA countries, EEA/CATDAT country-year data, 1980-2024, 2024 prices
+OLS of the annual gap (pp) on the year, Newey-West SE (3 lags)
+                            OLS Regression Results                            
+==============================================================================
+Dep. Variable:                 gap_pp   R-squared:                       0.056
+Model:                            OLS   Adj. R-squared:                  0.034
+Method:                 Least Squares   F-statistic:                     2.142
+Date:                Mon, 26 Oct 2026   Prob (F-statistic):              0.151
+Time:                        12:05:06   Log-Likelihood:                -173.99
+No. Observations:                  45   AIC:                             352.0
+Df Residuals:                      43   BIC:                             355.6
+Df Model:                           1                                         
+Covariance Type:                  HAC                                         
+==============================================================================
+                 coef    std err          z      P>|z|      [0.025      0.975]
+------------------------------------------------------------------------------
+Intercept    514.7634    296.468      1.736      0.083     -66.304    1095.831
+year          -0.2165      0.148     -1.463      0.143      -0.507       0.073
+==============================================================================
+Omnibus:                       10.098   Durbin-Watson:                   1.856
+Prob(Omnibus):                  0.006   Jarque-Bera (JB):                9.799
+Skew:                          -1.112   Prob(JB):                      0.00745
+Kurtosis:                       3.528   Cond. No.                     3.09e+05
+==============================================================================
+
+Notes:
+[1] Standard Errors are heteroscedasticity and autocorrelation robust (HAC) using 3 lags and without small sample correction
+[2] The condition number is large, 3.09e+05. This might indicate that there are
+strong multicollinearity or other numerical problems.
+
+Same, weighted by annual economic losses
+                            WLS Regression Results                            
+==============================================================================
+Dep. Variable:                 gap_pp   R-squared:                       0.059
+Model:                            WLS   Adj. R-squared:                  0.037
+Method:                 Least Squares   F-statistic:                     1.451
+Date:                Mon, 26 Oct 2026   Prob (F-statistic):              0.235
+Time:                        12:05:06   Log-Likelihood:                -180.57
+No. Observations:                  45   AIC:                             365.1
+Df Residuals:                      43   BIC:                             368.8
+Df Model:                           1                                         
+Covariance Type:                  HAC                                         
+==============================================================================
+                 coef    std err          z      P>|z|      [0.025      0.975]
+------------------------------------------------------------------------------
+Intercept    490.5492    339.460      1.445      0.148    -174.779    1155.878
+year          -0.2034      0.169     -1.205      0.228      -0.534       0.128
+==============================================================================
+Omnibus:                        8.940   Durbin-Watson:                   1.863
+Prob(Omnibus):                  0.011   Jarque-Bera (JB):                8.058
+Skew:                          -0.887   Prob(JB):                       0.0178
+Kurtosis:                       4.071   Cond. No.                     2.85e+05
+==============================================================================
+
+Notes:
+[1] Standard Errors are heteroscedasticity and autocorrelation robust (HAC) using 3 lags and without small sample correction
+[2] The condition number is large, 2.85e+05. This might indicate that there are
+strong multicollinearity or other numerical problems.
+
+Ten costliest years (1980, 1990, 1999, 2002, 2003, 2017, 2021, 2022, 2023, 2024) hold 48.2% of economic losses

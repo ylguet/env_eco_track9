@@ -1,12 +1,19 @@
 specification,coef_pp,se,p_value,cells,countries
 "Baseline: 2025 version, CATDAT",-37.083,11.379,0.001,98,30
 2024 version (before the 2025 corrections),-31.222,8.601,0.0,97,30
+"2024 version, without France",-31.43,10.458,0.003,92,29
 2022 version,-34.481,10.548,0.001,96,30
 EM-DAT losses instead of CATDAT,-17.925,8.396,0.033,61,26
 Without France,-29.764,10.496,0.005,93,29
 Without France and Spain,-33.326,12.958,0.01,88,28
+"Without France, Denmark and Iceland",-21.81,10.241,0.033,87,27
+French windstorm coded as private,-33.572,10.425,0.001,98,30
+River and pluvial flood cells only,-37.721,9.921,0.0,29,29
+"Flood cells only, without France",-36.362,11.544,0.002,28,28
 Only cells with losses of EUR 100m or more,-32.065,11.845,0.007,72,27
 Cells weighted by economic losses,-32.622,16.187,0.044,98,30
+"Weighted by economic losses, without France",-5.636,6.025,0.35,93,29
+"Weighted, French windstorm coded as private",-13.447,12.219,0.271,98,30
 Risk measured by EIOPA modelled risk score (0-4),-36.764,11.579,0.001,98,30
 Regime = cover mandatory by law,-34.848,12.084,0.004,98,30
 "Regime = cover mandatory by law, without Romania",-44.751,7.821,0.0,95,29
