@@ -10,8 +10,8 @@ MODEL 1: gap = a_peril + b*log10(annual losses/GDP, per mille)
 Dep. Variable:                 gap_pp   R-squared:                       0.218
 Model:                            OLS   Adj. R-squared:                  0.176
 Method:                 Least Squares   F-statistic:                     6.364
-Date:                Wed, 14 Oct 2026   Prob (F-statistic):           0.000421
-Time:                        20:34:44   Log-Likelihood:                -464.48
+Date:                Mon, 26 Oct 2026   Prob (F-statistic):           0.000421
+Time:                        12:05:06   Log-Likelihood:                -464.48
 No. Observations:                  98   AIC:                             941.0
 Df Residuals:                      92   BIC:                             956.5
 Df Model:                           5                                         
@@ -42,8 +42,8 @@ Cells with public involvement: 20 of 98
 Dep. Variable:                 gap_pp   R-squared:                       0.419
 Model:                            OLS   Adj. R-squared:                  0.380
 Method:                 Least Squares   F-statistic:                     22.90
-Date:                Wed, 14 Oct 2026   Prob (F-statistic):           8.91e-10
-Time:                        20:34:44   Log-Likelihood:                -449.95
+Date:                Mon, 26 Oct 2026   Prob (F-statistic):           8.91e-10
+Time:                        12:05:06   Log-Likelihood:                -449.95
 No. Observations:                  98   AIC:                             913.9
 Df Residuals:                      91   BIC:                             932.0
 Df Model:                           6                                         
@@ -68,16 +68,55 @@ Kurtosis:                       4.636   Cond. No.                         19.6
 Notes:
 [1] Standard Errors are robust to cluster correlation (CRV1)
 
+MODEL 3: gap = a_peril + b*EIOPA modelled risk score (0-4) + c*public_or_PPP_insurance_or_reinsurance
+                            OLS Regression Results                            
+==============================================================================
+Dep. Variable:                 gap_pp   R-squared:                       0.404
+Model:                            OLS   Adj. R-squared:                  0.365
+Method:                 Least Squares   F-statistic:                     19.59
+Date:                Mon, 26 Oct 2026   Prob (F-statistic):           5.34e-09
+Time:                        12:05:06   Log-Likelihood:                -451.17
+No. Observations:                  98   AIC:                             916.3
+Df Residuals:                      91   BIC:                             934.4
+Df Model:                           6                                         
+Covariance Type:              cluster                                         
+==========================================================================================
+                             coef    std err          z      P>|z|      [0.025      0.975]
+------------------------------------------------------------------------------------------
+Intercept                 52.5081     15.402      3.409      0.001      22.320      82.696
+C(peril)[T.Earthquake]    35.4104     11.897      2.976      0.003      12.092      58.729
+C(peril)[T.Flood*]        30.5992     12.757      2.399      0.016       5.596      55.602
+C(peril)[T.Wildfire]      40.2858     13.310      3.027      0.002      14.198      66.373
+C(peril)[T.Windstorm]     21.3137     13.882      1.535      0.125      -5.894      48.522
+risk_est                   1.4108      2.852      0.495      0.621      -4.180       7.001
+public_scheme            -36.7637     11.579     -3.175      0.001     -59.458     -14.070
+==============================================================================
+Omnibus:                       24.580   Durbin-Watson:                   2.055
+Prob(Omnibus):                  0.000   Jarque-Bera (JB):               36.439
+Skew:                          -1.140   Prob(JB):                     1.22e-08
+Kurtosis:                       4.929   Cond. No.                         23.2
+==============================================================================
+
+Notes:
+[1] Standard Errors are robust to cluster correlation (CRV1)
+
 ROBUSTNESS OF THE REGIME COEFFICIENT (clustered SE by country)
                                    specification  coef_pp     se  p_value  cells  countries
                   Baseline: 2025 version, CATDAT  -37.083 11.379    0.001     98         30
       2024 version (before the 2025 corrections)  -31.222  8.601    0.000     97         30
+                    2024 version, without France  -31.430 10.458    0.003     92         29
                                     2022 version  -34.481 10.548    0.001     96         30
                  EM-DAT losses instead of CATDAT  -17.925  8.396    0.033     61         26
                                   Without France  -29.764 10.496    0.005     93         29
                         Without France and Spain  -33.326 12.958    0.010     88         28
+             Without France, Denmark and Iceland  -21.810 10.241    0.033     87         27
+               French windstorm coded as private  -33.572 10.425    0.001     98         30
+              River and pluvial flood cells only  -37.721  9.921    0.000     29         29
+                Flood cells only, without France  -36.362 11.544    0.002     28         28
       Only cells with losses of EUR 100m or more  -32.065 11.845    0.007     72         27
                Cells weighted by economic losses  -32.622 16.187    0.044     98         30
+     Weighted by economic losses, without France   -5.636  6.025    0.350     93         29
+     Weighted, French windstorm coded as private  -13.447 12.219    0.271     98         30
 Risk measured by EIOPA modelled risk score (0-4)  -36.764 11.579    0.001     98         30
                  Regime = cover mandatory by law  -34.848 12.084    0.004     98         30
 Regime = cover mandatory by law, without Romania  -44.751  7.821    0.000     95         29

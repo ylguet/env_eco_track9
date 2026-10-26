@@ -19,12 +19,23 @@
   - **Period:** losses are **cumulative from 1980 to (version − 1)**. The 2025 version, which we use, covers 1980–2024.
 - **Sheet *Country insurance scheme*.** Qualitative description of each national insurance regime: premium type, mandatory cover, public or private primary insurance and reinsurance, penetration band.
 
-**Important:** the file is **not a yearly time series**. Each figure is a 45-year total. The 2022–2025 vintages are four cumulative windows, and differences between them are dominated by revisions (see Fig. 5).
+**Important:** the file is **not a yearly time series**. Each figure is a 45-year total. The 2022–2025 vintages are four cumulative windows, and differences between them are dominated by revisions (see Fig. 6).
+
+**Second dataset: annual series (for the time question)**
+
+| | |
+|---|---|
+| Producer | European Environment Agency (EEA) |
+| Dataset | *Economic losses from climate-related extremes in Europe (1980–2024)*, Oct. 2025 revision 1 (`raw/eea_t_losses-from-climate-related-extremes_p_1980-2024_v01_r01.zip`, kept as downloaded) |
+| Version | Published 16 March 2026; doi:10.2909/569291df-7bec-44cc-b829-285671f5f238 |
+| Accessed | 26 October 2026, https://www.eea.europa.eu/en/datahub/datahubitem-view/77389680-ecd2-4f56-926f-8106061a5570 |
+
+Same CATDAT records, by **country and year**, total and insured losses, 2024 prices. We use the series that includes geophysical events, restricted to the 30 EIOPA countries. Unlike EIOPA, it includes heatwaves and droughts, has no peril split by country (only four hazard types for country groups), and lacks the supervisors' corrections (France's insured losses: €48.5bn against EIOPA's €101bn).
 
 ## Method
 
 - **Protection gap** = 1 − insured losses / economic losses (EIOPA's "uninsured losses %").
-- **Main source:** CATDAT, which has wider coverage (98 country × peril cells with losses, against 65 in EM-DAT). EM-DAT is used as a robustness check.
+- **Main source:** CATDAT, which has wider coverage (98 country × peril cells with losses, against 61 in EM-DAT). EM-DAT is used as a robustness check.
 - **Aggregation:** aggregates are **loss-weighted**: 1 − Σinsured / Σeconomic.
 - **No losses:** cells with no recorded economic loss have an **undefined** gap. EIOPA codes them as 100% uninsured; we set them to missing.
 - **Insured above economic:** where recorded insured losses exceed economic losses (Sweden flood, France coastal flood), the gap is floored at 0 and flagged.
@@ -131,10 +142,12 @@
 | `output/table4_vintages.csv` | Vintage comparison |
 | `output/regression.txt`, `regression_coefficients.csv` | Optional econometrics |
 | `output/table5…table8*.csv`, `regression_robustness.csv` | Audit additions: scheme features, policy limits, hidden gap, re-pricing, robustness |
-| `output/fig1…fig5*.png` | Figures (220 dpi, self-contained captions and sources) |
+| `output/fig1…fig6*.png` | Figures (220 dpi, self-contained captions and sources); Fig. 5 = EEA annual series, Fig. 6 = EIOPA vintages |
+| `output/table9…table11d*.csv`, `trend_eea.txt` | Review additions: relief × public involvement, French revision, EEA annual, decade and hazard gaps, trend |
+| `slides/project/` | Source of the presentation deck (Slides artifact; images point to its uploaded figures, i.e. `output/fig1`, `fig3`, `fig4`, `fig5`) |
 | `paper/paper.md` → `Track9_Protection_Gap_Paper.pdf` | Paper source and PDF (pandoc + XeLaTeX) |
 
-Requirements: see `requirements.txt` (Python 3.13, pandas, numpy, matplotlib, statsmodels, scipy, openpyxl).
+Requirements: see `requirements.txt` (Python 3.13, pandas, numpy, matplotlib, statsmodels, scipy, openpyxl). Re-run on 26 Oct 2026 with Python 3.15 and pandas 3.1: identical numbers.
 
 ## Final self-review (14 Oct 2026)
 
@@ -157,4 +170,34 @@ Graded against the guidelines' assessment criteria. Changes made after that revi
   - `requirements.txt` pins the package versions.
   - `paper_numbers.csv` traces every quoted number.
   - `build_pdf.sh` rebuilds the PDF.
-- **Still open, outside our control.** No annual series is available in the EIOPA file, so a trend cannot be measured. Downloading the EEA country-year data would allow it.
+- **Since resolved.** The EEA country-year data are now included and used for the trend (see below).
+
+## Changes after the peer review (26 Oct 2026)
+
+A classmate's review of the slides and paper raised eight points. What changed:
+
+1. **Reliance on France.** Fig. 4 now plots the **flood gap only** (France: 46% on flood, against 22% all perils). New robustness rows (`regression_robustness.csv`, paper Table 5):
+   - 2024 version without France −31.4 (10.5)
+   - flood cells only −37.7 (9.9), and −36.4 without France
+   - French windstorm coded as private −33.6 (CatNat covers wind only at cyclone strength)
+   - without France, Denmark and Iceland −21.8 (10.2)
+   - **loss-weighted without France −5.6 (6.0), not significant.** The paper and slides state this limit.
+2. **Flat premiums.** One wording throughout: they go with low gaps only through compulsion and public schemes, and do not lower the gap on their own.
+3. **State relief vs charity hazard.** `table9_relief_by_public_involvement.csv`: systematic relief inside public schemes gives a 29% gap, outside them 93%, the same as ad-hoc relief.
+4. **Time.** New annual analysis on the EEA series (Fig. 5, `table11*.csv`, `trend_eea.txt`):
+   - every 10-year window ending 1990–2024 lies at 75–84% uninsured
+   - linear trend −2.2 pp per decade (Newey-West SE 1.5), not significant
+   - annual losses tripled, from €15bn a year in the 1980s to €46bn in 2020–24
+   - the ten costliest years hold 48% of all losses
+5. **Who bears it.** EU Solidarity Fund: €8.6bn since 2002, at most about 2% of the €459bn uninsured over 2002–2023. Banks stay in the paper's argument but are removed from the slide.
+6. **Slovenia.** The 5.2‰ of GDP is now labelled an average over 1980–2024. It was 2.2‰ in the version ending in 2022, before the August 2023 floods (2023 = 55% of Slovenia's losses). The GDP is a recent (≈2024) GDP, backed out of EIOPA's ratios.
+7. **Exposure.** Model 3 uses EIOPA's modelled risk score instead of realised loss intensity, which avoids the division bias: +1.4 (2.9). Public involvement stays at −36.8 (11.6).
+8. **Numbers checked.**
+   - France's 2024→2025 revision is +€62.8bn insured (windstorm 45.6, flood 16.4, earthquake 0.7) against +€6.0bn economic.
+   - The €185bn rise refers to the 2022→2025 versions.
+   - Croatia uses CATDAT's €1.3bn; with EM-DAT its burden would be 4.3‰.
+   - EM-DAT has 21 zero-insured cells (6% of losses), and dropping them gives 79%.
+   - Hail is counted in windstorm.
+   - The Swiss Re comparison is now the same year: in 2024, 73% uninsured in the 30 countries against 57% worldwide.
+
+Also: group names on the title, the professor no longer appears as an author, fewer "X, not Y" constructions and em dashes, "tragedy of horizons" replaced by myopia, Romania's PAID named, and DiD candidates given (Italy's 2025 mandate for firms, Romania 2009–10, Belgium mid-2000s).

@@ -6,8 +6,13 @@ Reproduces every number, table and figure from the raw EIOPA file, as downloaded
     (EIOPA, Dashboard on insurance protection gap for natural catastrophes,
      input data, last updated 4-5 December 2025; accessed 12 October 2026)
 
+and the EEA country-year series built on the same CATDAT data, as downloaded:
+    eea_t_losses-from-climate-related-extremes_p_1980-2024_v01_r01.zip
+    (EEA, Economic losses from climate-related extremes in Europe (1980-2024), Oct. 2025 revision 1,
+     published 16 March 2026, doi:10.2909/569291df-7bec-44cc-b829-285671f5f238; accessed 26 October 2026)
+
 Usage:  python analysis.py ["raw/<file as downloaded>.xlsx"]  [output_dir]
-        (requirements: see requirements.txt; the raw file is checked against its SHA-256 below)
+        (requirements: see requirements.txt; both raw files are checked against raw/SHA256.txt)
 
 Definitions (see technical description EIOPA-BoS-25/565, 6 Oct 2025, ch. 4):
   - Losses are cumulative over 1980 to (DB version - 1), in million EUR, CPI-adjusted.
@@ -18,7 +23,7 @@ Definitions (see technical description EIOPA-BoS-25/565, 6 Oct 2025, ch. 4):
   - A cell with zero recorded economic losses has an UNDEFINED gap (EIOPA codes it 100% / score -9;
     we set it to missing).
 """
-import sys, os, hashlib
+import sys, os, hashlib, io, zipfile
 import numpy as np
 import pandas as pd
 import matplotlib
@@ -31,12 +36,20 @@ RAW = sys.argv[1] if len(sys.argv) > 1 else \
     "raw/EIOPA-BoS-24-474_PowerBI input dashboard on insurance protectiongap.xlsx"
 OUT = sys.argv[2] if len(sys.argv) > 2 else "output"
 os.makedirs(OUT, exist_ok=True)
-# Traceability: the exact file we downloaded (4 Dec 2025 version, accessed 12 Oct 2026)
-RAW_SHA256 = open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "raw", "SHA256.txt")).read().split()[0] \
-    if os.path.exists(os.path.join(os.path.dirname(os.path.abspath(__file__)), "raw", "SHA256.txt")) else None
+EEA_RAW = os.path.join(os.path.dirname(os.path.abspath(RAW)),
+                       "eea_t_losses-from-climate-related-extremes_p_1980-2024_v01_r01.zip")
+# Traceability: the exact files we downloaded (EIOPA: 4 Dec 2025 version, accessed 12 Oct 2026;
+# EEA: Oct. 2025 revision 1, accessed 26 Oct 2026)
+SHA_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "raw", "SHA256.txt")
+EXPECTED = dict(l.split(None, 1)[::-1] for l in open(SHA_FILE).read().strip().splitlines()) \
+    if os.path.exists(SHA_FILE) else {}
+EXPECTED = {k.strip(): v for k, v in EXPECTED.items()}
+for path in [RAW, EEA_RAW]:
+    sha = hashlib.sha256(open(path, "rb").read()).hexdigest()
+    want = EXPECTED.get(os.path.basename(path))
+    if want and sha != want:
+        sys.exit(f"{path} differs from the file used in the paper (SHA-256 {sha} != {want}).")
 sha = hashlib.sha256(open(RAW, "rb").read()).hexdigest()
-if RAW_SHA256 and sha != RAW_SHA256:
-    sys.exit(f"Raw file differs from the one used in the paper (SHA-256 {sha} != {RAW_SHA256}).")
 NUMBERS = []          # every number quoted in the paper, with the output it comes from
 def record(name, value, source):
     NUMBERS.append({"quantity": name, "value": value, "output_file": source})
@@ -244,6 +257,91 @@ relief_mode = sch.groupby("country").post_disaster_relief.agg(lambda x: x.dropna
 hidden = d[(d.risk_est >= 2) & (d.econ_cd == 0)][["country", "peril", "risk_est", "ins_penetration"]]
 hidden.to_csv(f"{OUT}/table7_modelled_risk_without_recorded_losses.csv", index=False)
 
+# Systematic relief and public involvement overlap: split the relief comparison by regime
+rp = cells2.assign(relief=cells2.post_disaster_relief.fillna("not reported"))
+relief_x_public = (rp.groupby(["relief", "public_scheme"])
+                     .apply(lambda g: pd.Series({"cells": len(g), "countries": g.country.nunique(),
+                                                 "gap_loss_weighted_pct": 100 * (1 - g.ins_cd.sum() / g.econ_cd.sum()),
+                                                 "country_list": ", ".join(sorted(g.country.unique()))}))
+                     .reset_index())
+relief_x_public.round(1).to_csv(f"{OUT}/table9_relief_by_public_involvement.csv", index=False)
+
+# Revisions of France between the 2024 and 2025 versions, by peril (EUR bn)
+fr_rev = (df[(df.country == "France") & df.version.isin([2024, 2025])]
+          .pivot_table(index="peril", columns="version", values=["econ_cd", "ins_cd"]) / 1e3)
+fr_rev[("econ_cd", "change")] = fr_rev[("econ_cd", 2025)] - fr_rev[("econ_cd", 2024)]
+fr_rev[("ins_cd", "change")] = fr_rev[("ins_cd", 2025)] - fr_rev[("ins_cd", 2024)]
+fr_rev.round(2).to_csv(f"{OUT}/table10_france_revision_2024_2025.csv")
+
+# GDP behind EIOPA's loss intensity: implied GDP = (cumulative losses / 45 years) / (per mille / 1000)
+gdp_implied = (d[d.norm_cd > 0].assign(g=lambda t: t.econ_cd / (MAIN_VERSION - 1980) / (t.norm_cd / 1e3) / 1e3)
+                .groupby("country").g.median())      # EUR bn; close to each country's 2024 GDP
+
+# Slovenia without the August 2023 floods: the 2023 version (losses 1980-2022) predates them
+slo = df[df.country == "Slovenia"].assign(u=lambda t: t.norm_cd * t.gap_cd.fillna(0)).groupby("version").u.sum()
+
+# EM-DAT: cells with economic but no insured losses (missing insured data enter as zero)
+em = d[d.econ_em > 0]
+em_zero = em[em.ins_em == 0]
+em_gap_excl_zero = 1 - em[em.ins_em > 0].ins_em.sum() / em[em.ins_em > 0].econ_em.sum()
+
+# Croatia with EM-DAT's earthquake losses (EUR 13.8bn instead of CATDAT's 1.3bn)
+hr = d[d.country == "Croatia"].set_index("peril")
+hr_eq_extra = hr.loc["Earthquake", "econ_em"] - hr.loc["Earthquake", "econ_cd"]
+hr_burden_emdat = by_country.loc["Croatia", "uninsured_per_mil_gdp"] + \
+    1e3 * hr_eq_extra / (MAIN_VERSION - 1980) / (gdp_implied["Croatia"] * 1e3)
+
+# ---------- 2b. annual series: EEA country-year losses (same CATDAT source) ----------
+# Weather-, climate-related and geotechnical hazards (incl. heatwaves and droughts), 2024 prices,
+# restricted to the 30 EIOPA countries. Total and insured losses per country and year.
+with zipfile.ZipFile(EEA_RAW) as z:
+    xl = io.BytesIO(z.read([n for n in z.namelist() if n.endswith(".xlsx")][0]))
+eea = pd.read_excel(xl, sheet_name="Country_year", header=1)
+eea = eea[(eea["price level"] == 2024) & eea["Hazard Type"].str.contains("geotechnical")]
+years = [c for c in eea.columns if isinstance(c, (int, float)) and 1980 <= c <= 2024]
+eea = (eea.melt(id_vars=["Category", "ISO2"], value_vars=years, var_name="year", value_name="v")
+          .assign(year=lambda t: t.year.astype(int))
+          .pivot_table(index=["ISO2", "year"], columns="Category", values="v", aggfunc="sum").reset_index()
+          .rename(columns={"Total losses": "econ", "Insured losses": "ins"}))
+eea = eea[eea.ISO2.isin(d.iso.unique())]
+assert eea.ISO2.nunique() == 30
+annual = eea.groupby("year")[["econ", "ins"]].sum()
+annual["gap"] = 1 - annual.ins / annual.econ
+roll = annual[["econ", "ins"]].rolling(10).sum()
+annual["gap_10y"] = 1 - roll.ins / roll.econ                   # loss-weighted, 10 years ending that year
+annual["decade"] = (annual.index // 10 * 10).astype(str) + "s"
+annual.round(4).to_csv(f"{OUT}/table11_eea_annual_gap.csv")
+decades = annual.groupby("decade")[["econ", "ins"]].sum().assign(gap=lambda t: 1 - t.ins / t.econ)
+decades.round(4).to_csv(f"{OUT}/table11b_eea_gap_by_decade.csv")
+eea_total_gap = 1 - annual.ins.sum() / annual.econ.sum()
+# Fitted linear trend of the annual gap, with Newey-West (HAC, 3 lags) standard errors
+trend_df = annual.reset_index().assign(gap_pp=lambda t: 100 * t.gap)
+trend = smf.ols("gap_pp ~ year", trend_df).fit(cov_type="HAC", cov_kwds={"maxlags": 3})
+trend_w = smf.wls("gap_pp ~ year", trend_df, weights=trend_df.econ).fit(cov_type="HAC", cov_kwds={"maxlags": 3})
+top10_years = annual.nlargest(10, "econ")
+top10_share = top10_years.econ.sum() / annual.econ.sum()
+eea_country = eea.groupby("ISO2")[["econ", "ins"]].sum().assign(gap=lambda t: 1 - t.ins / t.econ)
+eea_country.round(4).to_csv(f"{OUT}/table11c_eea_gap_by_country.csv")
+# By hazard type: only available for country groupings; EEA-32 = the 30 countries + Switzerland and Turkiye
+xl.seek(0)
+yt = pd.read_excel(xl, sheet_name="Year_type", header=1)
+yt = yt[(yt["price level"] == 2024) & yt["Hazard Type"].str.contains("geotechnical")
+        & (yt["Country grouping"] == "EEA-32") & yt.Category.isin(["Total loss", "Insured loss"])]
+HAZ = ["meteorological", "hydrological", "climatological", "geotechnical"]
+yt = yt.melt(id_vars=["Category", "Year"], value_vars=HAZ, var_name="hazard").fillna({"value": 0})
+yt["decade"] = (yt.Year // 10 * 10).astype(str) + "s"
+haz_dec = yt.pivot_table(index=["hazard", "decade"], columns="Category", values="value", aggfunc="sum")
+haz_dec["gap"] = 1 - haz_dec["Insured loss"] / haz_dec["Total loss"]
+haz_dec.round(4).to_csv(f"{OUT}/table11d_eea32_gap_by_hazard_decade.csv")
+# Slovenia: share of its 1980-2024 losses that fell in 2023
+slo_2023_share = eea[(eea.ISO2 == "SI") & (eea.year == 2023)].econ.sum() / eea[eea.ISO2 == "SI"].econ.sum()
+with open(f"{OUT}/trend_eea.txt", "w") as f:
+    f.write("Annual protection gap, 30 EIOPA countries, EEA/CATDAT country-year data, 1980-2024, 2024 prices\n")
+    f.write("OLS of the annual gap (pp) on the year, Newey-West SE (3 lags)\n")
+    f.write(str(trend.summary()) + "\n\nSame, weighted by annual economic losses\n" + str(trend_w.summary()) + "\n")
+    f.write(f"\nTen costliest years ({', '.join(map(str, sorted(top10_years.index)))}) hold "
+            f"{100*top10_share:.1f}% of economic losses\n")
+
 # ---------- 3. econometrics ----------
 reg = d[(d.econ_cd > 0)].copy()
 reg["gap_pp"] = 100 * reg.gap_cd
@@ -252,6 +350,10 @@ reg = reg.dropna(subset=["gap_pp", "log10_loss_intensity", "public_scheme"])
 m1 = smf.ols("gap_pp ~ log10_loss_intensity + C(peril)", data=reg).fit(
     cov_type="cluster", cov_kwds={"groups": reg.country.astype("category").cat.codes})
 m2 = smf.ols("gap_pp ~ log10_loss_intensity + public_scheme + C(peril)", data=reg).fit(
+    cov_type="cluster", cov_kwds={"groups": reg.country.astype("category").cat.codes})
+# Model 3: EIOPA's modelled risk score (0-4, catastrophe models of the 200-year loss / GDP) replaces realised
+# loss intensity. It is not built from recorded losses, so it avoids the division bias of Models 1-2.
+m3 = smf.ols("gap_pp ~ risk_est + public_scheme + C(peril)", data=reg).fit(
     cov_type="cluster", cov_kwds={"groups": reg.country.astype("category").cat.codes})
 with open(f"{OUT}/regression.txt", "w") as f:
     f.write("Cross-section of country x peril cells with recorded economic losses (CATDAT, 1980-2024)\n")
@@ -262,9 +364,12 @@ with open(f"{OUT}/regression.txt", "w") as f:
     f.write(str(m1.summary()) + "\n\n")
     f.write("MODEL 2: gap = a_peril + b*log10(annual losses/GDP) + c*public_or_PPP_insurance_or_reinsurance\n")
     f.write(f"Cells with public involvement: {int(reg.public_scheme.sum())} of {len(reg)}\n")
-    f.write(str(m2.summary()) + "\n")
+    f.write(str(m2.summary()) + "\n\n")
+    f.write("MODEL 3: gap = a_peril + b*EIOPA modelled risk score (0-4) + c*public_or_PPP_insurance_or_reinsurance\n")
+    f.write(str(m3.summary()) + "\n")
 coef = pd.DataFrame({
-    "M1 coef": m1.params, "M1 se": m1.bse, "M2 coef": m2.params, "M2 se": m2.bse})
+    "M1 coef": m1.params, "M1 se": m1.bse, "M2 coef": m2.params, "M2 se": m2.bse,
+    "M3 coef": m3.params, "M3 se": m3.bse})
 coef.round(2).to_csv(f"{OUT}/regression_coefficients.csv")
 
 # Robustness of Model 2. The regime variables (2025 scheme sheet) are attached to every version.
@@ -286,15 +391,32 @@ def est(x, formula="gap_pp ~ log10_loss_intensity + public_scheme + C(peril)", v
     return m.params[var], m.bse[var], m.pvalues[var], int(m.nobs), x.country.nunique()
 
 base = build(MAIN_VERSION)
+b24 = build(2024)
+no_fr = base[base.country != "France"]
+FR_DK_IS = ["France", "Denmark", "Iceland"]
+# France's CatNat regime (and CCR reinsurance) covers wind only above cyclone thresholds; ordinary European
+# windstorms are insured privately under the standard storm guarantee. EIOPA nevertheless codes French
+# windstorm as public reinsurance, so we also re-estimate with that cell coded as private.
+fr_ws = (base.country == "France") & (base.peril == "Windstorm")
+base_frws = base.assign(public_scheme=np.where(fr_ws, 0, base.public_scheme))
 specs = [
     ("Baseline: 2025 version, CATDAT", base, {}),
-    ("2024 version (before the 2025 corrections)", build(2024), {}),
+    ("2024 version (before the 2025 corrections)", b24, {}),
+    ("2024 version, without France", b24[b24.country != "France"], {}),
     ("2022 version", build(2022), {}),
     ("EM-DAT losses instead of CATDAT", build(MAIN_VERSION, "em"), {}),
-    ("Without France", base[base.country != "France"], {}),
+    ("Without France", no_fr, {}),
     ("Without France and Spain", base[~base.country.isin(["France", "Spain"])], {}),
+    ("Without France, Denmark and Iceland", base[~base.country.isin(FR_DK_IS)], {}),
+    ("French windstorm coded as private", base_frws, {}),
+    ("River and pluvial flood cells only", base[base.peril == "Flood*"],
+     {"formula": "gap_pp ~ log10_loss_intensity + public_scheme"}),
+    ("Flood cells only, without France", no_fr[no_fr.peril == "Flood*"],
+     {"formula": "gap_pp ~ log10_loss_intensity + public_scheme"}),
     ("Only cells with losses of EUR 100m or more", base[base.econ_cd >= 100], {}),
     ("Cells weighted by economic losses", base, {"weights": base.econ_cd}),
+    ("Weighted by economic losses, without France", no_fr, {"weights": no_fr.econ_cd}),
+    ("Weighted, French windstorm coded as private", base_frws, {"weights": base_frws.econ_cd}),
     ("Risk measured by EIOPA modelled risk score (0-4)", base, {"formula": "gap_pp ~ risk_est + public_scheme + C(peril)"}),
     ("Regime = cover mandatory by law", base, {"formula": "gap_pp ~ log10_loss_intensity + mandatory + C(peril)", "var": "mandatory"}),
     ("Regime = cover mandatory by law, without Romania", base[base.country != "Romania"],
@@ -448,34 +570,67 @@ fig.subplots_adjust(left=0.13, right=0.97, bottom=0.27, top=0.83)
 note(fig)
 fig.savefig(f"{OUT}/fig3_uninsured_by_country.png", dpi=220); plt.close(fig)
 
-# Fig 4: loss intensity vs gap, country level, by flood regime
-bc = by_country.dropna(subset=["gap"]).copy()
-bc = bc[bc.annual_loss_per_mil_gdp > 0]
+# Fig 4: flood loss intensity vs flood gap, one dot per country, by flood regime. Flood only, so that the
+# regime colour and the gap refer to the same peril (France's all-peril gap is driven by windstorm).
+bc = d[(d.peril == "Flood*") & (d.econ_cd > 0) & (d.norm_cd > 0)].set_index("country")
+bc = bc.assign(gap=bc.gap_cd, annual_loss_per_mil_gdp=bc.norm_cd)
 fig, ax = plt.subplots(figsize=(7, 4.6))
 for k, (lab, col) in {0: ("Private flood insurance", CAT[0]),
                       1: ("Public or public-private flood insurance or reinsurance", CAT[1])}.items():
     s = bc[bc.public_scheme == k]
     ax.scatter(s.annual_loss_per_mil_gdp, 100 * s.gap, s=55, color=col, edgecolor=SURF, lw=1.5, label=lab, zorder=3)
+OFFSET = {"Finland": (4, -9), "Slovakia": (4, -9), "Portugal": (-14, 3), "Latvia": (-14, 3), "Hungary": (4, 3),
+          "Poland": (-15, -8), "Romania": (-5, 6), "Croatia": (-3, -13), "Greece": (5, -4), "Norway": (4, -10),
+          "Luxembourg": (4, 3), "Czechia": (4, -9)}
 for c, r in bc.iterrows():
-    ax.annotate(d.loc[d.country == c, "iso"].iloc[0], (r.annual_loss_per_mil_gdp, 100 * r.gap),
-                xytext=(4, -9) if c == "Portugal" else (4, 3), textcoords="offset points", fontsize=7, color=INK2)
+    ax.annotate(r.iso + ("‡" if r.insured_gt_economic else ""), (r.annual_loss_per_mil_gdp, 100 * r.gap),
+                xytext=OFFSET.get(c, (4, 3)), textcoords="offset points", fontsize=7, color=INK2)
 ax.set_xscale("log")
-ax.set_xlabel("Loss intensity: average annual economic losses, all perils (per mille of GDP, log scale)")
+ax.set_xlabel("Flood loss intensity: average annual river and pluvial flood losses (per mille of GDP, log scale)")
 from matplotlib.ticker import FixedLocator, FixedFormatter
-ax.xaxis.set_major_locator(FixedLocator([0.05, 0.1, 0.2, 0.5, 1, 2, 5]))
-ax.xaxis.set_major_formatter(FixedFormatter(["0.05", "0.1", "0.2", "0.5", "1", "2", "5"]))
+TICKS = [0.01, 0.02, 0.05, 0.1, 0.2, 0.5, 1, 2, 5]
+ax.xaxis.set_major_locator(FixedLocator(TICKS))
+ax.xaxis.set_major_formatter(FixedFormatter([f"{t:g}" for t in TICKS]))
 ax.xaxis.set_minor_formatter(FixedFormatter([]))
-ax.set_ylabel("Protection gap, all perils (%)")
+ax.set_ylabel("Protection gap, river and pluvial flood (%)")
 ax.set_ylim(-3, 103)
-ax.legend(loc="lower left", frameon=False, fontsize=8)
-ax.set_title("Fig. 4  Countries that lose more relative to GDP are not better insured; the three\n"
-             "lowest gaps (FR, DK, IS) are in countries with public involvement in flood cover", loc="left")
+ax.legend(loc="lower right", frameon=False, fontsize=8)
+pub_fl = bc[bc.public_scheme == 1]
+fig.suptitle("Fig. 4  Flood: countries that lose more relative to GDP are not better insured;\n"
+             f"the {len(pub_fl)} countries with public involvement range from {100*pub_fl.gap.min():.0f}% "
+             f"to {100*pub_fl.gap.max():.0f}% uninsured", x=0.01, ha="left", fontsize=11, fontweight="bold")
 fig.subplots_adjust(left=0.1, right=0.97, bottom=0.2, top=0.86)
 note(fig, SOURCE_NOTE + " Regime = public or public-private primary insurance or reinsurance for residential "
-     "river/pluvial flood (EIOPA country insurance scheme sheet, 2025).")
+     "river/pluvial flood (EIOPA country insurance scheme sheet, 2025). ‡ = insured exceeds economic losses (gap set to 0). "
+     "Cyprus: no recorded flood loss.")
 fig.savefig(f"{OUT}/fig4_loss_intensity_vs_gap.png", dpi=220); plt.close(fig)
 
-# Fig 5: vintages - sensitivity to revisions
+# Fig 5: annual series (EEA country-year data): losses per year and the 10-year loss-weighted gap
+fig, (ax, ax2) = plt.subplots(2, 1, figsize=(7, 5.6), sharex=True, gridspec_kw={"height_ratios": [1, 1.1], "hspace": 0.18})
+yrs_ = annual.index.values
+ax.bar(yrs_, annual.ins / 1e3, color=CAT[0], width=0.8, label="Insured")
+ax.bar(yrs_, (annual.econ - annual.ins) / 1e3, bottom=annual.ins / 1e3, color=CAT[1], width=0.8, label="Uninsured")
+ax.set_ylabel("EUR bn per year (2024 prices)")
+ax.legend(loc="upper left", frameon=False, fontsize=8, ncol=2)
+ax.grid(axis="x", visible=False)
+ax2.scatter(yrs_, 100 * annual.gap, s=14, color=INK2, alpha=0.55, label="Single year", zorder=3)
+ax2.plot(yrs_, 100 * annual.gap_10y, color=CAT[1], lw=2.2, label="10-year loss-weighted average (ending that year)")
+ax2.plot(yrs_, trend.params["Intercept"] + trend.params["year"] * yrs_, color=CAT[0], lw=1.2, ls="--",
+         label=f"Linear trend: {trend.params['year']*10:+.1f} pp per decade (SE {trend.bse['year']*10:.1f})")
+ax2.set_ylim(25, 100); ax2.set_ylabel("Protection gap (%)")
+ax2.legend(loc="lower left", frameon=False, fontsize=7.5)
+ax2.set_xlim(1979, 2025)
+g10 = annual.gap_10y.loc[1990:]
+fig.suptitle("Fig. 5  Annual losses swing widely, but every 10-year window ending in\n"
+             f"1990-2024 left {100*g10.min():.0f}-{100*g10.max():.0f}% uninsured; the trend is not significant",
+             x=0.01, ha="left", fontsize=11, fontweight="bold")
+fig.subplots_adjust(left=0.1, right=0.97, bottom=0.14, top=0.87)
+note(fig, "Source: EEA, Economic losses from climate-related extremes in Europe (1980-2024), Oct. 2025 rev. 1, CATDAT; "
+     "30 EIOPA countries; weather-, climate-related (incl. heatwaves, droughts) and geophysical hazards.\n"
+     "Own calculations. Trend: OLS of the annual gap on the year, Newey-West standard error.")
+fig.savefig(f"{OUT}/fig5_annual_gap_eea.png", dpi=220); plt.close(fig)
+
+# Fig 6: vintages - sensitivity to revisions
 fig, ax = plt.subplots(figsize=(7, 3.6))
 for p in PERILS:
     s = vint[vint.peril == p]
@@ -487,12 +642,12 @@ ax.set_xlim(2021.8, 2025.8); ax.set_ylim(0, 100)
 ax.set_ylabel("Protection gap (%)"); ax.set_xlabel("Dashboard version (loss window covered)")
 wind_drop = 100 * (vint.query("version == 2024 and peril == 'Windstorm'").gap.iloc[0]
                    - vint.query("version == 2025 and peril == 'Windstorm'").gap.iloc[0])
-ax.set_title("Fig. 5  The measured gap moves more with data revisions than with new years:\n"
+ax.set_title("Fig. 6  Between dashboard versions the measured gap moves with data revisions:\n"
              f"windstorm drops {wind_drop:.1f} points in 2025 after corrections to past insured losses", loc="left")
 fig.subplots_adjust(left=0.1, right=0.8, bottom=0.27, top=0.83)
 note(fig, "Source: EIOPA dashboard input data, versions 2022-2025, CATDAT. Each point is a cumulative window, not a single year; "
      "each version also re-prices all past losses (x" + ", x".join(f"{f:.3f}" for f in reprice.repricing_factor) + ").")
-fig.savefig(f"{OUT}/fig5_vintages.png", dpi=220); plt.close(fig)
+fig.savefig(f"{OUT}/fig6_vintages.png", dpi=220); plt.close(fig)
 
 # ---------- 5. every number quoted in the paper, traced to its output ----------
 record("Economic losses 1980-2024, EUR bn", total.econ_cd / 1e3, "table1_summary_by_peril.csv")
@@ -525,6 +680,56 @@ record("Model 1 R2", m1.rsquared, "regression.txt"); record("Model 2 R2", m2.rsq
 record("Permutation test p-value", perm_p, "regression.txt")
 record("Fractional logit AME of public involvement, pp", ame, "regression_robustness.csv")
 record("Share of cells with a 100% gap", 100 * share_at_100, "regression_robustness.csv")
+record("Model 3: public involvement coefficient, pp", m3.params["public_scheme"], "regression.txt")
+record("Model 3: public involvement SE", m3.bse["public_scheme"], "regression.txt")
+record("Model 3: modelled risk coefficient, pp per score step", m3.params["risk_est"], "regression.txt")
+record("Model 3: modelled risk SE", m3.bse["risk_est"], "regression.txt")
+record("Model 3 R2", m3.rsquared, "regression.txt")
+for name, cf, se, p, n, k in rob.itertuples(index=False):
+    record(f"Robustness: {name}, coefficient pp", cf, "regression_robustness.csv")
+    record(f"Robustness: {name}, SE", se, "regression_robustness.csv")
+    record(f"Robustness: {name}, p-value", p, "regression_robustness.csv")
+for p in ["France", "Denmark", "Iceland", "Norway", "Spain", "Belgium", "Germany", "Italy"]:
+    record(f"Flood gap, {p}, %", 100 * d[(d.country == p) & (d.peril == "Flood*")].gap_cd.iloc[0], "clean_data_2025.csv")
+record("France windstorm gap, %", 100 * d[(d.country == "France") & (d.peril == "Windstorm")].gap_cd.iloc[0], "clean_data_2025.csv")
+for pk, lab in [("change", "change 2024->2025")]:
+    record(f"France insured losses, all perils, {lab}, EUR bn", fr_rev[("ins_cd", pk)].sum(), "table10_france_revision_2024_2025.csv")
+    record(f"France economic losses, all perils, {lab}, EUR bn", fr_rev[("econ_cd", pk)].sum(), "table10_france_revision_2024_2025.csv")
+for r in relief_x_public.itertuples():
+    record(f"Gap, relief = {r.relief}, public = {r.public_scheme}, %", r.gap_loss_weighted_pct, "table9_relief_by_public_involvement.csv")
+for v in [2023, 2025]:
+    record(f"Slovenia uninsured losses per year, {v} version, per mille of GDP", slo.loc[v], "clean_data_all_versions.csv")
+record("Slovenia: share of 1980-2024 losses in 2023 (EEA), %", 100 * slo_2023_share, "table11_eea_annual_gap.csv")
+record("Slovenia implied GDP behind EIOPA loss intensity, EUR bn", gdp_implied["Slovenia"], "clean_data_2025.csv")
+record("EM-DAT cells with losses", len(em), "clean_data_2025.csv")
+record("EM-DAT cells with zero insured losses", len(em_zero), "clean_data_2025.csv")
+record("EM-DAT share of economic losses in zero-insured cells, %", 100 * em_zero.econ_em.sum() / em.econ_em.sum(), "clean_data_2025.csv")
+record("EM-DAT gap excluding zero-insured cells, %", 100 * em_gap_excl_zero, "clean_data_2025.csv")
+record("Croatia uninsured losses per year with EM-DAT earthquake, per mille of GDP", hr_burden_emdat, "clean_data_2025.csv")
+record("EEA data: economic losses 1980-2024, 30 countries, EUR bn", annual.econ.sum() / 1e3, "table11_eea_annual_gap.csv")
+record("EEA data: insured losses 1980-2024, 30 countries, EUR bn", annual.ins.sum() / 1e3, "table11_eea_annual_gap.csv")
+record("EEA data: gap 1980-2024, 30 countries, %", 100 * eea_total_gap, "table11_eea_annual_gap.csv")
+record("EEA data: France gap, %", 100 * eea_country.loc["FR", "gap"], "table11c_eea_gap_by_country.csv")
+record("EEA data: France insured losses, EUR bn", eea_country.loc["FR", "ins"] / 1e3, "table11c_eea_gap_by_country.csv")
+record("EEA data: 2024 single-year gap, %", 100 * annual.loc[2024, "gap"], "table11_eea_annual_gap.csv")
+record("EEA data: 2015-2024 gap, %", 100 * annual.loc[2024, "gap_10y"], "table11_eea_annual_gap.csv")
+record("EEA data: min 10-year gap (windows ending 1990-2024), %", 100 * g10.min(), "table11_eea_annual_gap.csv")
+record("EEA data: max 10-year gap (windows ending 1990-2024), %", 100 * g10.max(), "table11_eea_annual_gap.csv")
+for dec, r in decades.iterrows():
+    record(f"EEA data: gap in the {dec}, %", 100 * r.gap, "table11b_eea_gap_by_decade.csv")
+for (hz, dec), r in haz_dec.iterrows():
+    record(f"EEA-32 {hz} gap in the {dec}, %", 100 * r.gap, "table11d_eea32_gap_by_hazard_decade.csv")
+record("Trend of annual gap, pp per decade", 10 * trend.params["year"], "trend_eea.txt")
+record("Trend of annual gap, SE per decade", 10 * trend.bse["year"], "trend_eea.txt")
+record("Trend of annual gap, p-value", trend.pvalues["year"], "trend_eea.txt")
+record("Loss-weighted trend, pp per decade", 10 * trend_w.params["year"], "trend_eea.txt")
+record("Loss-weighted trend, SE per decade", 10 * trend_w.bse["year"], "trend_eea.txt")
+record("Share of 1980-2024 losses in the 10 costliest years, %", 100 * top10_share, "trend_eea.txt")
+record("EEA data: uninsured losses 2002-2023 (EU Solidarity Fund period), EUR bn",
+       (annual.econ - annual.ins).loc[2002:2023].sum() / 1e3, "table11_eea_annual_gap.csv")
+for dec, r in decades.iterrows():
+    record(f"EEA data: average annual economic losses in the {dec}, EUR bn",
+           r.econ / annual[annual.decade == dec].shape[0] / 1e3, "table11b_eea_gap_by_decade.csv")
 pd.DataFrame(NUMBERS).assign(value=lambda t: t.value.round(4)).to_csv(f"{OUT}/paper_numbers.csv", index=False)
 with open(f"{OUT}/regression.txt", "a") as f:
     f.write(f"\nFractional logit AME of public involvement: {ame:.2f} pp (cluster-bootstrap SE {ame_se:.2f}, {len(boots)} draws)\n")
